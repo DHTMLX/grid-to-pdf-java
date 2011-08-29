@@ -51,7 +51,7 @@ public class PDFWriter {
 	
 	public double headerLineHeight = 30;
 	public String pageNumTemplate = "Page {pageNum}/{allNum}";
-	public String watermark = "This document was made with dhtmlx library. http://dhtmlx.com";
+	public String watermark = null;
 	
 	private PDFColumn[][] cols = null;
 	
@@ -513,5 +513,9 @@ public class PDFWriter {
 	
 	public int getRowsStat() {
 		return this.rows_stat;
+	}
+	
+	public void setWatermark(String mark) {
+		watermark = mark;	
 	}
 }
