@@ -34,6 +34,8 @@ public class PDFWriter {
 	public double headerImgHeight = 100;
 	public double footerImgHeight = 100;
 	
+	public double fontSize = 10;
+	
 	private String bgColor;
 	private String lineColor;
 	private String headerTextColor;
@@ -95,7 +97,7 @@ public class PDFWriter {
 	private void createPDF() throws Exception {
 		pdf = new PDF();
 		f1 = new Font(pdf, "Helvetica");
-		f1.setSize(10);
+		f1.setSize(fontSize);
 
 		pages = new ArrayList<Page>();
 		page = new Page(pdf, parser.getOrientation());
@@ -108,7 +110,7 @@ public class PDFWriter {
 	}
 
 	private void headerPrint() throws Exception {
-		f1.setSize(10);
+		f1.setSize(fontSize);
 		if (cols == null) {
 			cols = parser.getHeaderInfo();
 			widths = parser.getWidths();
@@ -517,5 +519,9 @@ public class PDFWriter {
 	
 	public void setWatermark(String mark) {
 		watermark = mark;	
+	}
+	
+	public void setFontSize(Double fontsize) {
+		this.fontSize = fontsize;
 	}
 }
