@@ -524,4 +524,9 @@ public class PDFWriter {
 	public void setFontSize(Double fontsize) {
 		this.fontSize = fontsize;
 	}
+
+
+	public void setFontSize(int fontsize) {
+		fontSize = fontsize;
+	}
 }
