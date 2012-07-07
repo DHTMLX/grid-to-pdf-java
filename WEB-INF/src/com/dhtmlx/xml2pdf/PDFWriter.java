@@ -33,9 +33,11 @@ public class PDFWriter {
 	public String pathToImgs = "";
 	public double headerImgHeight = 100;
 	public double footerImgHeight = 100;
-	
+
 	public double fontSize = 10;
-	
+
+	public String tree_tab = "      ";
+
 	private String bgColor;
 	private String lineColor;
 	private String headerTextColor;
@@ -242,8 +244,10 @@ public class PDFWriter {
 				} else {
 					cf = f1;
 				}
-				
-				TextLine text = new TextLine(cf, textWrap(cells[j].getValue(), width - 2*cellOffset, cf));
+				String t = cells[j].getValue();
+				if (cols[0][j].getType().equals("tree"))
+					t = new String(new char[rows[i].getLevel()]).replace("\0", tree_tab) + t;
+				TextLine text = new TextLine(cf, textWrap(t, width - 2*cellOffset, cf));
 				double text_x = 0;
 				if (al.equalsIgnoreCase("left") == true) {
 					text_x = cellOffset;
@@ -337,8 +341,10 @@ public class PDFWriter {
 			im.setPosition(offsetLeft, offsetTop);
 			im.scaleBy(1);
 			im.drawOn(page);
-			pageHeight -= headerImgHeight;
-			offsetTop += headerImgHeight;
+			if (firstPage == false) {
+				pageHeight -= headerImgHeight;
+				offsetTop += headerImgHeight;
+			}
 			firstPage = true;
 		}
 	}

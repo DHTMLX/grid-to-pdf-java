@@ -12,8 +12,12 @@ import org.w3c.dom.NodeList;
 public class PDFRow {
 
 	private PDFCell[] cells;
+	private int level = 0;
 	
 	public void parse(Node parent, HttpServletResponse resp) throws IOException {
+		Element el = (Element) parent;
+		String l = el.getAttribute("level"); 
+		if (l != null) level = Integer.parseInt(l);
 		NodeList nodes = ((Element) parent).getElementsByTagName("cell");
 		Node text_node;
 		if ((nodes != null)&&(nodes.getLength() > 0)) {
@@ -30,5 +34,9 @@ public class PDFRow {
 	
 	public PDFCell[] getCells() {
 		return cells;
+	}
+	
+	public int getLevel() {
+		return level;
 	}
 }
