@@ -57,7 +57,7 @@ public class PDFXMLParser {
 		getHeaderInfo();
 		if (orientation_string != "") {
 			if (orientation_string.equalsIgnoreCase("landscape")) {
-				orientation = A4.LANDSCAPE;
+				orientation = new double[] {842.0, 595.0};
 			} else {
 				orientation = A4.PORTRAIT;
 			}
@@ -121,7 +121,7 @@ public class PDFXMLParser {
 					}
 				}
 				if (columns[i][j].getRowspan() > 0) {
-					for (int k = i + 1; k < i + columns[i][j].getRowspan(); k++) {
+					for (int k = i + 1; k < i + columns[i][j].getRowspan()-1; k++) {
 						columns[i][j].setHeight(columns[i][j].getHeight() + 1);
 						columns[k][j].setHeight(0);
 					}

@@ -16,8 +16,8 @@ public class PDFRow {
 	
 	public void parse(Node parent, HttpServletResponse resp) throws IOException {
 		Element el = (Element) parent;
-		String l = el.getAttribute("level"); 
-		if (l != null) level = Integer.parseInt(l);
+		String l = el.getAttribute("level");
+		if (l != null && !l.isEmpty()) level = Integer.parseInt(l);
 		NodeList nodes = ((Element) parent).getElementsByTagName("cell");
 		Node text_node;
 		if ((nodes != null)&&(nodes.getLength() > 0)) {

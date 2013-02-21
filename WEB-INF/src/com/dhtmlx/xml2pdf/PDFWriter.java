@@ -30,9 +30,9 @@ public class PDFWriter {
 	public double offsetRight = 30;
 	public double lineHeight = 20;
 	public double cellOffset = 3;
-	public String pathToImgs = "";
-	public double headerImgHeight = 100;
-	public double footerImgHeight = 100;
+	public String pathToImgs = "D:/www/export/export_sample/grid-pdf-php/imgs/";
+	public double headerImgHeight = 200;
+	public double footerImgHeight = 180;
 
 	public double fontSize = 10;
 
@@ -78,7 +78,6 @@ public class PDFWriter {
 			setColorProfile();
 			headerPrint();
 			printRows(resp);
-			printFooter();
 			printPageNumbers();
 			outputPDF(resp);
 
@@ -108,7 +107,7 @@ public class PDFWriter {
 		pageWidth = sizes[0] - offsetLeft - offsetRight;
 		pageHeight = sizes[1] - offsetTop - offsetBottom;
 		printHeader();
-		
+		printFooter();
 	}
 
 	private void headerPrint() throws Exception {
@@ -126,7 +125,7 @@ public class PDFWriter {
 		double[] bg = RGBColor.getColor(bgColor);
 		double[] border = RGBColor.getColor(lineColor);
 		double x = offsetLeft;
-		double y = offsetTop;
+		double y = offsetTop + (parser.getHeader() ? headerImgHeight : 0);
 		int lines = 0;
 
 		for (int i = 0; i < cols.length; i++) {
@@ -140,12 +139,16 @@ public class PDFWriter {
 			y += headerLineHeight;
 			lines++;
 		}
-		
+
 		headerHeight = lines*headerLineHeight;
 		footerHeight = (cols.length - lines)*headerLineHeight;
-		y = pageHeight-headerHeight-footerHeight;
-		y = Math.floor(y/lineHeight)*lineHeight+offsetTop+headerHeight;
-		
+	}
+
+	private void footerPrint(double y) throws Exception {
+		double x;
+		double[] bg = RGBColor.getColor(bgColor);
+		double[] border = RGBColor.getColor(lineColor);
+
 		for (int i = 0; i < cols.length; i++) {
 			if (!cols[i][0].isFooter()) continue;
 			x = offsetLeft;
@@ -191,7 +194,7 @@ public class PDFWriter {
 		rows_stat = rows.length;
 		double[] rowColor;
 		double[] border = RGBColor.getColor(lineColor);
-		double y = offsetTop + headerHeight;
+		double y = offsetTop + headerHeight + (parser.getHeader() ? headerImgHeight : 0);
 		
 		Font cf;
 		
@@ -288,19 +291,19 @@ public class PDFWriter {
 				x += width;
 			}
 			y += lineHeight;
-			if (y + lineHeight - offsetTop + footerHeight>= pageHeight) {
+			if (y + lineHeight + footerHeight >= pageHeight + offsetTop - (parser.getFooter() ? footerImgHeight : 0)) {
+				footerPrint(y);
 				page = new Page(pdf, parser.getOrientation());
 				pages.add(page);
-				if (firstPage == true) {
-					pageHeight += headerImgHeight;
-					offsetTop -= headerImgHeight;
-					firstPage = false;
-				}
 				headerPrint();
-				y = offsetTop + headerHeight;
+				printHeader();
+				printFooter();
+				y = offsetTop + headerHeight + (parser.getHeader() ? headerImgHeight : 0);
 			}
 			x = offsetLeft;
 		}
+		footerPrint(y);
+		printFooter();
 		f1 = new Font(pdf, "Helvetica");
 	}
 
@@ -341,11 +344,6 @@ public class PDFWriter {
 			im.setPosition(offsetLeft, offsetTop);
 			im.scaleBy(1);
 			im.drawOn(page);
-			if (firstPage == false) {
-				pageHeight -= headerImgHeight;
-				offsetTop += headerImgHeight;
-			}
-			firstPage = true;
 		}
 	}
 
@@ -358,9 +356,6 @@ public class PDFWriter {
 			im.setPosition(offsetLeft, pageHeight + offsetTop - footerImgHeight);
 			im.scaleBy(1);
 			im.drawOn(page);
-			pageHeight -= footerImgHeight;
-			offsetTop += footerImgHeight;
-			firstPage = true;
 		}
 	}
 
