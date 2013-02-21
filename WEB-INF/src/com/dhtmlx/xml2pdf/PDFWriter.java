@@ -30,9 +30,10 @@ public class PDFWriter {
 	public double offsetRight = 30;
 	public double lineHeight = 20;
 	public double cellOffset = 3;
-	public String pathToImgs = "D:/www/export/export_sample/grid-pdf-php/imgs/";
-	public double headerImgHeight = 200;
-	public double footerImgHeight = 180;
+	public String pathToImgs = "";
+	public double headerImgHeight = 100;
+	public double footerImgHeight = 100;
+	public Boolean headerFirstPage = false;
 
 	public double fontSize = 10;
 
@@ -64,10 +65,10 @@ public class PDFWriter {
 	private Font f3 = null;
 	private Font f4 = null;
 
-	private boolean firstPage = false;
 	private double footerHeight = 0;
 	private int cols_stat;
 	private int rows_stat;
+	private Boolean firstPage = true;
 
 	public void generate(String xml, HttpServletResponse resp){
 		parser = new PDFXMLParser();
@@ -107,7 +108,8 @@ public class PDFWriter {
 		pageWidth = sizes[0] - offsetLeft - offsetRight;
 		pageHeight = sizes[1] - offsetTop - offsetBottom;
 		printHeader();
-		printFooter();
+		if (!headerFirstPage)
+			printFooter();
 	}
 
 	private void headerPrint() throws Exception {
@@ -125,7 +127,8 @@ public class PDFWriter {
 		double[] bg = RGBColor.getColor(bgColor);
 		double[] border = RGBColor.getColor(lineColor);
 		double x = offsetLeft;
-		double y = offsetTop + (parser.getHeader() ? headerImgHeight : 0);
+		double headerOffset = (parser.getHeader() && (!headerFirstPage || (headerFirstPage && firstPage)) ? headerImgHeight : 0);
+		double y = offsetTop + headerOffset;
 		int lines = 0;
 
 		for (int i = 0; i < cols.length; i++) {
@@ -291,19 +294,25 @@ public class PDFWriter {
 				x += width;
 			}
 			y += lineHeight;
-			if (y + lineHeight + footerHeight >= pageHeight + offsetTop - (parser.getFooter() ? footerImgHeight : 0)) {
+			if (y + lineHeight + footerHeight >= pageHeight + offsetTop - (headerFirstPage ? 0 : footerImgHeight)) {
+				if (i == rows.length-1) continue;
 				footerPrint(y);
+				firstPage = false;
 				page = new Page(pdf, parser.getOrientation());
 				pages.add(page);
 				headerPrint();
-				printHeader();
-				printFooter();
-				y = offsetTop + headerHeight + (parser.getHeader() ? headerImgHeight : 0);
+				if (!headerFirstPage) {
+					printHeader();
+					printFooter();
+				}
+				double headerOffset = parser.getHeader() && !headerFirstPage ? headerImgHeight : 0;
+				y = offsetTop + headerHeight + headerOffset;
 			}
 			x = offsetLeft;
 		}
 		footerPrint(y);
-		printFooter();
+		if (headerFirstPage)
+			printFooter();
 		f1 = new Font(pdf, "Helvetica");
 	}
 
